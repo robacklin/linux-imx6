@@ -272,4 +272,9 @@ config MX6_INTER_LDO_BYPASS
 	 LDO will replaced by external pmic regulator(e.g. pfuze100), VDDCORE
 	 can be adjust automatically adjust by cpu frequency.
 
+config MACH_IMX_BLUETOOTH_RFKILL
+       tristate "i.MX Bluetooth rfkill interface support"
+       depends on RFKILL
+       ---help---
+	Say Y to get the standard rfkill interface of Bluetooth
 endif

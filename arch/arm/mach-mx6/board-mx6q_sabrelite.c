@@ -51,6 +51,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/machine.h>
 #include <linux/regulator/fixed.h>
+#include <linux/rfkill.h>
 
 #include <mach/common.h>
 #include <mach/hardware.h>
@@ -64,6 +65,7 @@
 #include <mach/ipu-v3.h>
 #include <mach/mxc_hdmi.h>
 #include <mach/mxc_asrc.h>
+#include <mach/imx_rfkill.h>
 #include <linux/i2c/tsc2007.h>
 #include <linux/wl12xx.h>
 
@@ -1037,6 +1039,22 @@ static const struct imx_pcie_platform_data pcie_data  __initconst = {
 	.pcie_dis	= -EINVAL,
 };
 
+static int bt_power_change(int status)
+{
+	pr_err("%s: status %d\n", __func__, status);
+	gpio_set_value(N6_WL1271_BT_EN,0 != status);
+
+	return 0;
+}
+
+static struct platform_device imx_bt_rfkill = {
+	.name = "imx_bt_rfkill",
+};
+
+static struct imx_bt_rfkill_platform_data imx_bt_rfkill_data = {
+	.power_change = bt_power_change,
+};
+
 /*!
  * Board specific initialization.
  */
@@ -1217,6 +1235,8 @@ static void __init mx6_sabrelite_board_init(void)
 		gpio_free(N6_WL1271_WL_EN);
 		gpio_free(N6_WL1271_BT_EN);
 		mdelay(1);
+
+		mxc_register_device(&imx_bt_rfkill, &imx_bt_rfkill_data);
 	}
 #endif
 
